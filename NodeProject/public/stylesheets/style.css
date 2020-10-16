@@ -1,3 +1,40 @@
+.navbar{
+    height: 100px !important;
+}
+
+.nav-pills > li {
+    margin-left: 50px;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1.8em;
+    width: 150px;
+    text-align: center;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link{
+    background-color: black;
+    color: white !important;
+}
+
+#pills-about{
+    font-family: 'Josefin Sans', sans-serif;
+    background-color: black;
+    background-size: cover; 
+    width: 100%; 
+    height: 100vh;
+    color: white;
+    padding: 50px;
+}
+
+.block-text{
+    margin-top: 50px;
+    font-family: 'Merriweather', serif;
+    font-size: 1.8em;
+    width: 50%;
+    margin: 0 auto;
+    border-top: 5px solid white;
+    padding-top: 40px;
+}
+
 .profile-left{
     background-color: black; 
     background-size: cover; 
