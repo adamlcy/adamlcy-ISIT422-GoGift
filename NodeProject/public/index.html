@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&family=Merriweather&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./stylesheets/style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <title>User Profile</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #ED5D92;">
+        <a class="navbar-brand secondary-font bold" href="#" style="font-size: 3.2em;">GoGift</a>
+        <ul class="navbar-nav nav nav-pills">
+            <li class="nav-item active">
+              <a class="nav-link active" id="pills-about-tab" data-toggle="tab" role="tab" href="#pills-about" aria-selected="true" aria-controls="pills-about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="pills-user-tab" data-toggle="tab" role="tab" href="#pills-user" aria-selected="false" aria-controls="pills-user">Profile</a>
+            </li>
+        </ul>
+    </nav>
+
+    
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-about" role="tabpanel" aria-labelledby="pills-about-tab">
+            <h1 class="bold" style="text-align: center; margin-bottom: 40px;">About</h1>
+            <div class="block-text">
+                <p><u>GoGift</u> is a personalized gift suggestion app for you and your friends.</p>
+                <p>Begin by setting up your gift profile.</p>
+                <p>Searching for gift ideas.</p>
+                <p>Adding them to your wishlist.</p>
+                <p>And inviting friends.</p>
+                <p>Click on <u>Profile</u> to see a sample profile page.</p>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pills-user" role="tabpanel" aria-labelledby="pills-user-tab">        
+            <div class="container-fluid">
+                <div class="row">
+                    <!--Profile Menu Component-->
+                    <div class="col-lg-6 d-lg-flex justify-content-center align-items-center profile-left">
+                        <div>
+                            <div class="img"></div>
+                            <h2 class="primary-font bold" style="color: white; text-align: center; margin-top: 50px;">White Seahorse</h2>
+                            <div class="btn">Find Friends</div>
+                            <div class="btn">Search Gift Ideas</div>
+                            <div class="btn">See My Wishlist</div>
+                        </div>
+                    </div>
+                    <!--end of Profile Menu Component-->
+                    <div class="col-lg-6 profile-right">
+                        <!--Header Component-->
+                        <div class="d-lg-flex justify-content-between" style="padding: 30px;">
+                            <h1 class="primary-font bold">My Profile</h1>
+                            <img src="./images/EditIcon.png" style="width: 10%; height: 10%">
+                        </div>
+                        <!--end of Header Component-->
+                        <div style="margin: 30px; padding-bottom: 30px; border-bottom: 5px solid black; font-size: 1.6em">
+                            <p class="secondary-font">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        </div>
+                        <!--Header Component-->
+                        <div class="d-lg-flex justify-content-between" style="padding: 30px;">
+                            <h1 class="primary-font bold">My Tags</h1>
+                            <img src="./images/EditIcon.png" style="width: 10%; height: 10%">
+                        </div>
+                        <!--end of Header Component-->
+                ,       <div style="padding: 30px;" class="d-lg-flex justify-content-start">
+                            <!--Tag Component-->
+                            <div class="tag">postage stamps</div>
+                            <!--Tag Component-->
+                            <div class="tag tag-n-children">amigurumi</div>
+                            <!--Tag Component-->
+                            <div class="tag tag-n-children">tea blends</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+    
+</body>
+</html>
