@@ -38,6 +38,32 @@ mongoose.connect(mongo_uri, {useNewUrlParser: true})
     console.log("MongoDB is connected!")
 );
 
+app.get('/getUserInfo', async(req, res) => {
+    let user_id = '5f97245cd5ce43461a7a14fb';
+    const userInfo = await userModel.findById(user_id)
+                        .select('-tag -wishlist -friend -_id');
+    try{
+        console.log(userInfo);
+        res.send(userInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+app.get('/getFriendInfo', async(req, res) => {
+    let user_id = '5f97245cd5ce43461a7a14fb';
+    const friendInfo = await userModel.findById(user_id)
+                        .populate('friend', '-_id -tag -wishlist -friend')
+                        .select('friend -_id');
+    try{
+        console.log(friendInfo.friend);
+        res.send(friendInfo.friend);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+
 app.get('/getFriendsList/:user_id', async(req, res) => {
     console.log(req.params.user_id);
     const friendList = await userModel.findById(req.params.user_id);
@@ -63,10 +89,10 @@ app.get('/getFriendsInfo/:user_id', async(req, res) => {
     const friendList = 
         await userModel.findById(req.params.user_id)
         .populate('friend', '-_id -tag -wishlist -friend')
-        .select('-tag -wishlist');
+        .select('-tag -wishlist -_id');
     try{
         console.log('calling mongodb');
-        console.log(friendList);
+        console.log(friendList.friend);
         res.send(friendList);
     }catch(e){
         res.status(500).send(e);
