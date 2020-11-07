@@ -9,6 +9,27 @@
   <h1>Express</h1>
   <p>Welcome to Express</p>
 </body>
+
+<h3>Create Account</h3>
+First Name: <input type="text" id="fn">
+Last Name: <input type="text" id="ln">
+Email: <input type="text" id="em">
+Bio: <input type="text" id="bio">
+Img: <input type="text" id="img">
+Tags: <input type="text" id="tag">
+<button id="account">Create</button>
+<pre id="accTxt"></pre>
+
+<h3>Update Account</h3>
+First Name: <input type="text" id="ufn">
+Last Name: <input type="text" id="uln">
+Email: <input type="text" id="uem">
+Bio: <input type="text" id="ubio">
+Img: <input type="text" id="uimg">
+<button id="update">Update</button>
+<pre id="upTxt"></pre>
+
+
 <button id="friend-button">Find my friend</button>
 <pre id="friend-data"></pre>
 <button id="friend-list-button">Find my friend list</button>
@@ -27,7 +48,150 @@
 
 <script>
   window.addEventListener('DOMContentLoaded', (event) => {
-    let user_id = '5f97245cd5ce43461a7a14fb';    
+    let user_id = '5f97245cd5ce43461a7a14fb'; 
+
+    
+    
+    
+  /////////////Demo for creat account//////////////////  
+    const fn = document.getElementById('fn');
+    const ln = document.getElementById('ln');
+    const em = document.getElementById('em');
+    const bio = document.getElementById('bio');
+    const img = document.getElementById('img');
+    const tag = document.getElementById('tag');
+    const accBtn = document.getElementById('account');
+    const accTxt = document.getElementById('accTxt');
+
+    
+
+
+    accBtn.addEventListener('click', () => {
+      let tArr = tag.value.split(",");
+
+    //get all the tag ids and names
+    async function getTagArray(tagArray){      
+      
+      let tagCall = await fetch('/allTags');
+      let allTags = await tagCall.json();
+      let dbTags = allTags.tags;
+      let dbTIds = allTags.tagIds;
+    
+      let promArray = await tagArray.map(async(tag) => {
+        tag = tag.trim();
+        let i = dbTags.indexOf(tag);
+        console.log(i);
+        console.log(tag);
+        if(i !== -1){
+          //get the object id of the existing doc
+          tag = dbTIds[i];
+          console.log(`ObjectID: ${tag}`);
+          return tag;
+        }
+        else{
+          //create new tag doc if it doesn't exist in tag collection
+          let newId = await createTagPost(tag);
+          tag = newId;
+          console.log(`New ObjectID: ${tag}`);
+          return tag;
+        }  
+      });
+      //resolve all promises and get the new tag array with objectIds
+      let newTagArray = Promise.all(promArray).then((v) => v);
+      console.log(`New Tag Array: ${newTagArray}`);
+      return newTagArray;
+    }
+
+    async function createTagPost(tag){
+      let headers = {'Content-Type': 'application/json'};
+      try {
+        let addTagCall = await fetch('/tag', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({name: tag, item: []})
+              });
+        let tagNewId = await addTagCall.json();
+        return tagNewId;        
+      }catch(e){
+        console.log(`create tag failed: ${e}`);
+      }      
+    }
+      
+      getTagArray(tArr).then((array) => {
+        let headers = {'Content-Type': 'application/json'};
+        console.log(`Array : ${array}`);
+        let account = {
+          firstName: fn.value,
+          lastName: ln.value,
+          email: em.value,
+          bio: bio.value,
+          profileImg: img.value,
+          tag: array,
+          wishlist: [],
+          friend: []
+        };
+        fetch('/profile', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(account)
+        })
+          .then((res) => res.json())
+          .then((res) => {
+          console.log(res);
+          accTxt.innerHTML = JSON.stringify(res, null, 4);
+          })
+      })
+      .catch((e) => console.log(`create account failed: ${e}`));
+    });  
+
+  /////////////////////////////////////////////////////////// 
+  
+  
+  //Update profile
+  const ufn = document.getElementById('ufn');
+    const uln = document.getElementById('uln');
+    const uem = document.getElementById('uem');
+    const ubio = document.getElementById('ubio');
+    const uimg = document.getElementById('uimg');
+    const upBtn = document.getElementById('update');
+    const upTxt = document.getElementById('upTxt');
+
+//get content from current user
+fetch('/profile/5fa6d2ba67af73dbb03392cf')
+    .then((res) => res.json())
+    .then((res) => {
+      ufn.value = res.firstName;
+      uln.value = res.lastName;
+      uem.value = res.email;
+      ubio.value = res.bio;
+      uimg.value = res.profileImg;
+    })
+    .catch((e) => console.log('get user failed'));
+
+  upBtn.addEventListener('click', () => {
+    let headers = {'Content-Type': 'application/json'};
+    let update = {
+      firstName: ufn.value,
+      lastName: uln.value,
+      email: uem.value,
+      bio: ubio.value,
+      profileImg: uimg.value,
+    };
+      fetch('/profile/5fa6d2ba67af73dbb03392cf', {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify(update)
+      })
+      .then((res) => res.json())
+      .then((res) => {
+      console.log(res);
+      upTxt.innerHTML = JSON.stringify(res, null, 4);
+      })
+      .catch((e) => console.log(`update profile failed: ${e}`)); 
+  });  
+
+  ///////////////////////////////
+
 
   const friendBtn = document.getElementById('friend-button');
     const friendTxt = document.getElementById('friend-data');
