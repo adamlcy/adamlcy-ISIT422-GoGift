@@ -46,8 +46,7 @@ mongoose.connect(mongo_uri, {useNewUrlParser: true})
 app.get('/profile/:id', async(req, res) => {
     //let user_id = '5f97245cd5ce43461a7a14fb';
     const userInfo = await userModel.findById(req.params.id)
-                        .populate('tag', '-_id -item')
-			.select('-_id -friend -wishlist');
+                        .populate('tag')
     try{
         console.log(userInfo);
         res.send(userInfo);
@@ -85,7 +84,7 @@ app.post('/profile', async(req, res) => {
 
 app.patch('/profile/:id', async(req, res) => {
     console.log(req.params.id);
-    console.log(req.body);
+    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
     const userNewInfo = await userModel
                     .findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true});
     try{
