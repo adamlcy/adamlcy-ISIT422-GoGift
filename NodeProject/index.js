@@ -86,9 +86,9 @@ app.patch('/profile/:id', async(req, res) => {
     console.log(req.params.id);
     console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
     const userNewInfo = await userModel
-                    .findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true});
+                    .findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true}).populate('tag');
     try{
-        await userNewInfo.save();
+        //await userNewInfo.save();
         console.log(userNewInfo);
         res.send(userNewInfo);
     }catch(e){
