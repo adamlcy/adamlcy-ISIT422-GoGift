@@ -167,7 +167,25 @@ app.post('/tag', async(req, res) => {
     }
 });
 
+// GET /itemsByTag/:tagName
+// Search Gift Ideas Page. 
+// Get all items associated with the search term.
+// example output: [{"itemName":"50 Bird Postage Stamps","vendor":"PostalGuy","price":34.99,"image":"img/file/path","url":"url/path"}]
 
+app.get('/itemsByTag/:tagName', async(req, res) => {
+    //let user_id = '5f97245cd5ce43461a7a14fb';
+    
+    const tagItemInfo = await tagModel.findOne({name: req.params.tagName})
+                            .populate('item', '-tag -_id')
+                            .select('-_id');                            
+                        
+    try{
+        console.log(tagItemInfo.item);
+        res.send(tagItemInfo.item);
+    }catch(e){
+        res.status(500).send(e);
+    }
+}); 
 
 
 //////////////////////////////////////////////////////////
