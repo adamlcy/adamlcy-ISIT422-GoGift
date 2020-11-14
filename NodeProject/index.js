@@ -222,6 +222,27 @@ app.patch('/tag/:id', async(req, res) => {
     }
 });
 
+// PATCH /profile/item/:id
+// Update the item field of the profile.
+// data needed for update: user's id.
+// data to update: item
+// will pass back updated record
+
+app.patch('/profile/item/:id', async(req, res) => {
+    console.log(req.params.id);
+    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+    const userNewInfo = await userModel
+                    .findByIdAndUpdate(req.params.id, {$push: {wishlist: req.body}}, {new: true}).populate('wishlist');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+
 
 
 //////////////////////////////////////////////////////////
