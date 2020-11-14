@@ -29,6 +29,11 @@ Img: <input type="text" id="uimg">
 <button id="update">Update</button>
 <pre id="upTxt"></pre>
 
+<h3>Add Item to Tag</h3>
+Item Id: <input type="text" id="iid">
+<button id="add">Add</button>
+<pre id="addTxt"></pre>
+
 
 <button id="friend-button">Find my friend</button>
 <pre id="friend-data"></pre>
@@ -191,6 +196,32 @@ fetch('/profile/5fa6d2ba67af73dbb03392cf')
   });  
 
   ///////////////////////////////
+  //Test Add Item to Tag
+  const iid = document.getElementById('iid');
+    const addBtn = document.getElementById('add');
+    const addTxt = document.getElementById('addTxt');
+
+    addBtn.addEventListener('click', () => {
+      let headers = {'Content-Type': 'application/json'};
+      let update = [iid.value];
+      fetch('/tag/5f9724f98c008df2d8d1c23f', {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify(update)
+      })
+      .then((res) => res.json())
+      .then((res) => {
+      console.log(res);
+      addTxt.innerHTML = JSON.stringify(res, null, 4);
+      })
+      .catch((e) => console.log(`update tag failed: ${e}`));
+    });
+
+
+
+
+
+  ////////////////////////////////////
 
 
   const friendBtn = document.getElementById('friend-button');

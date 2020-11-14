@@ -146,6 +146,7 @@ app.get('/allTags', async(req, res) => {
     try{
         let tags = tagInfo.map(t => t.name);
         let tagIds = tagInfo.map(t => t._id);
+        console.log({tags: tags, tagIds: tagIds});
         res.send({tags: tags, tagIds: tagIds});
     }catch(e){
         res.status(500).send(e);
@@ -178,7 +179,6 @@ app.get('/itemsByTag/:tagName', async(req, res) => {
     const tagItemInfo = await tagModel.findOne({name: req.params.tagName})
                             .populate('item', '-tag -_id')
                             .select('-_id');                            
-                        
     try{
         console.log(tagItemInfo.item);
         res.send(tagItemInfo.item);
@@ -186,6 +186,42 @@ app.get('/itemsByTag/:tagName', async(req, res) => {
         res.status(500).send(e);
     }
 }); 
+
+// POST /item
+// Create Wishlist Item Page.
+// Create an item document in item collection.
+// Use case: created when a user creates a wishlist item.
+// data needed: name (items will be empty)
+
+app.post('/item', async(req, res) => {
+    const item = new itemModel(req.body);
+    try{
+        await item.save();
+        res.send(item._id);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// PATCH /tag/:id
+// Update the item field of the tag.
+// data needed for update: tag's id.
+// data to update: item 
+// will pass back updated record
+
+app.patch('/tag/:id', async(req, res) => {
+    console.log(req.params.id);
+    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+    const tagNewInfo = await tagModel
+                    .findByIdAndUpdate(req.params.id, {$push: {item: req.body}}, {new: true}).populate('item');
+    try{
+        console.log(tagNewInfo);
+        res.send(tagNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
 
 
 //////////////////////////////////////////////////////////
