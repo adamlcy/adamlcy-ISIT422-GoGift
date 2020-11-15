@@ -123,7 +123,7 @@ app.get('/friends/:id', async(req, res) => {
 app.get('/friend/:email', async(req, res) => {
     //let user_id = '5f97245cd5ce43461a7a14fb';
     const userInfo = await userModel.findOne({email: req.params.email})
-                        .select('-_id -friend -tag -wishlist').toObject();
+                        .select('-_id -friend -tag -wishlist');
     try{
         console.log(userInfo);
         res.send(userInfo);
