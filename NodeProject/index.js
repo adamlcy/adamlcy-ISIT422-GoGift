@@ -177,7 +177,7 @@ app.get('/itemsByTag/:tagName', async(req, res) => {
     //let user_id = '5f97245cd5ce43461a7a14fb';
     
     const tagItemInfo = await tagModel.findOne({name: req.params.tagName})
-                            .populate('item', '-tag -_id')
+                            .populate('item', '-tag')
                             .select('-_id');                            
     try{
         console.log(tagItemInfo.item);
