@@ -180,6 +180,7 @@ app.get('/allTags', async(req, res) => {
     try{
         let tags = tagInfo.map(t => t.name);
         let tagIds = tagInfo.map(t => t._id);
+        console.log({tags: tags, tagIds: tagIds});
         res.send({tags: tags, tagIds: tagIds});
     }catch(e){
         res.status(500).send(e);
@@ -210,9 +211,8 @@ app.get('/itemsByTag/:tagName', async(req, res) => {
     //let user_id = '5f97245cd5ce43461a7a14fb';
     
     const tagItemInfo = await tagModel.findOne({name: req.params.tagName})
-                            .populate('item', '-tag -_id')
+                            .populate('item', '-tag')
                             .select('-_id');                            
-                        
     try{
         console.log(tagItemInfo.item);
         res.send(tagItemInfo.item);
@@ -220,6 +220,81 @@ app.get('/itemsByTag/:tagName', async(req, res) => {
         res.status(500).send(e);
     }
 }); 
+
+// POST /item
+// Create Wishlist Item Page.
+// Create an item document in item collection.
+// Use case: created when a user creates a wishlist item.
+// data needed: name (items will be empty)
+
+app.post('/item', async(req, res) => {
+    const item = new itemModel(req.body);
+    try{
+        await item.save();
+        res.send(item._id);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// PATCH /tag/:id
+// Update the item field of the tag.
+// data needed for update: tag's id.
+// data to update: item 
+// will pass back updated record
+
+app.patch('/tag/:id', async(req, res) => {
+    console.log(req.params.id);
+    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+    const tagNewInfo = await tagModel
+                    .findByIdAndUpdate(req.params.id, {$push: {item: req.body}}, {new: true}).populate('item');
+    try{
+        console.log(tagNewInfo);
+        res.send(tagNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// PATCH /profile/item/:id
+// Update the item field of the profile.
+// data needed for update: user's id.
+// data to update: item
+// will pass back updated record
+
+app.patch('/profile/item/:id', async(req, res) => {
+    console.log(req.params.id);
+    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+    const userNewInfo = await userModel
+                    .findByIdAndUpdate(req.params.id, {$push: {wishlist: req.body}}, {new: true}).populate('wishlist');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// PATCH /profile/tag/:id
+// Update the tag field of the profile.
+// data needed for update: user's id.
+// data to update: tag
+// will pass back updated record
+
+app.patch('/profile/tag/:id', async(req, res) => {
+    console.log(req.params.id);
+    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+    const userNewInfo = await userModel
+                    .findByIdAndUpdate(req.params.id, {tag: req.body}, {new: true}).populate('wishlist');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
 
 
 //////////////////////////////////////////////////////////
