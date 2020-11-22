@@ -48,7 +48,9 @@ const upload = multer({dest: __basedir + '/multer-uploads/'});
 // POST /profileWithImg
 // Create account with image.
 
-app.post('/profileWithImg', upload.single('image'), async(req, res) => {
+app.post('/profileWithImg', upload.single('profileImg'), async(req, res) => {
+    console.log('getting file');
+    console.log(req.file);
     const imgUser = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -56,7 +58,7 @@ app.post('/profileWithImg', upload.single('image'), async(req, res) => {
         bio: req.body.bio,
         profileImg: {
             data: fs.readFileSync(path.join(__dirname + '/multer-uploads/' + req.file.filename)),
-            type: 'image/jpg'
+            contentType: req.file.mimetype
         },
         tag: [],
         wishlist: [],
@@ -69,6 +71,22 @@ app.post('/profileWithImg', upload.single('image'), async(req, res) => {
         res.status(200).send(imgUserDoc);
     }
     catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// GET /profileWithImg/:id
+// Get account with image.
+
+app.get('/profileWithImg/:id', async(req, res) => {
+    //let user_id = '5f97245cd5ce43461a7a14fb';
+    const userImgInfo = await imgUserModel.findById(req.params.id);
+                        
+    try{
+        console.log(userImgInfo);
+        res.contentType('json');
+        res.status(200).send(userImgInfo);
+    }catch(e){
         res.status(500).send(e);
     }
 });
