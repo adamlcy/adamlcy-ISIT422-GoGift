@@ -13,6 +13,9 @@ let tagModel = require('./tagModel');
 let itemModel = require('./itemModel');
 let imgUserModel = require('./userWithImgModel');
 
+//testing
+let imgModel = require('./imageModel');
+
 const corsOpt = {
     origin: 'http://localhost:4200',
     optionsSuccessStatus: 200 
@@ -73,6 +76,15 @@ app.post('/profileWithImg', upload.single('profileImg'), async(req, res) => {
     catch(e){
         res.status(500).send(e);
     }
+
+    let imgFilePath = path.join(__dirname + '/multer-uploads/' + req.file.filename);
+    fs.unlink(imgFilePath, (err) => {
+        if(err){
+            console.log(`failed to delete file: ${e}`);
+        }else{
+            console.log(`file deleted: ${imgFilePath}`);
+        }
+    });
 });
 
 // GET /profileWithImg/:id
@@ -407,6 +419,53 @@ app.get('/getItemsInfo/:user_id', async(req, res) => {
     }catch(e){
         res.status(500).send(e);
     }
+});
+
+
+////image test code
+app.post('/imgTest', upload.single('image'), async(req, res) => {
+    console.log(req.file);
+    const Image = {
+        image: {
+            data: fs.readFileSync(path.join(__dirname + '/multer-uploads/' + req.file.filename)),
+            contentType: 'image/jpeg'
+        },
+    };
+    
+    const imgInfo = new imgModel(Image);
+    console.log('sending to database');
+    console.log(imgInfo);
+    try{
+        await imgInfo.save();
+        res.status(200).send('image saved');
+    }
+    catch(e){
+        res.status(500).send(e);
+    }
+
+    
+    let imgFilePath = path.join(__dirname + '/multer-uploads/' + req.file.filename);
+    fs.unlink(imgFilePath, (err) => {
+        if(err){
+            console.log(`failed to delete file: ${e}`);
+        }else{
+            console.log(`file deleted: ${imgFilePath}`);
+        }
+    });
+});
+
+app.get('/getImage', async(req, res) => {
+    
+    const image = await imgModel.findById('5fbab3868dfb4058d2b62925');
+    
+    try{
+        console.log(image);
+        res.contentType('json');
+        res.send(image.image);
+    }catch(e){
+        res.status(500).send(e);
+    }
+    
 });
 
 
