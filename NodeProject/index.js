@@ -42,6 +42,7 @@ mongoose.connect(mongo_uri, {useNewUrlParser: true})
 const fs = require('fs'); 
 const multer = require('multer'); 
 
+global.__basedir = __dirname;
 const upload = multer({dest: __basedir + '/multer-uploads/'});
 
 // POST /profileWithImg

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const tag = require('./tagModel');
 const item = require('./itemModel');
 
-const user = new mongoose.Schema({
+const userWithImg = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
