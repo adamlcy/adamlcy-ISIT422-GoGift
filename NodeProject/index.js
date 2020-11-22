@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 let userModel = require('./userModel');
 let tagModel = require('./tagModel');
 let itemModel = require('./itemModel');
+let imgUserModel = require('./userWithImgModel');
 
 const corsOpt = {
     origin: 'http://localhost:4200',
@@ -37,6 +38,39 @@ mongoose.connect(mongo_uri, {useNewUrlParser: true})
 .then(
     console.log("MongoDB is connected!")
 );
+
+const fs = require('fs'); 
+const multer = require('multer'); 
+
+const upload = multer({dest: __basedir + '/multer-uploads/'});
+
+// POST /profileWithImg
+// Create account with image.
+
+app.post('/profileWithImg', upload.single('image'), async(req, res) => {
+    const imgUser = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        bio: req.body.bio,
+        profileImg: {
+            data: fs.readFileSync(path.join(__dirname + '/multer-uploads/' + req.file.filename)),
+            type: 'image/jpg'
+        },
+        tag: [],
+        wishlist: [],
+        friend: []
+    };
+    console.log(imgUser);
+    const imgUserDoc = new imgUserModel(imgUser);
+    try{
+        await imgUserDoc.save();
+        res.status(200).send(imgUserDoc);
+    }
+    catch(e){
+        res.status(500).send(e);
+    }
+});
 
 // GET /profile/:id
 // Display data on Profile Page.
