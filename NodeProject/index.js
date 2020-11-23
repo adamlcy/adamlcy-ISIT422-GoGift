@@ -105,7 +105,7 @@ app.patch('/profile/:id', async(req, res) => {
 app.get('/friends/:id', async(req, res) => {
     //let user_id = '5f97245cd5ce43461a7a14fb';
     const userInfo = await userModel.findById(req.params.id)
-                        .populate('friend', '-_id -tag -wishlist -friend')
+                        .populate('friend', '-tag -wishlist -friend')
 			.select('friend -_id');
     try{
         console.log(userInfo.friend);
