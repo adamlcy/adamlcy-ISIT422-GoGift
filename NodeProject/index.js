@@ -63,7 +63,7 @@ app.post('/profileWithImg', upload.single('profileImg'), async(req, res) => {
             data: fs.readFileSync(path.join(__dirname + '/multer-uploads/' + req.file.filename)),
             contentType: req.file.mimetype
         },
-        tag: [],
+        tag: JSON.parse(req.body.tag),
         wishlist: [],
         friend: []
     };
