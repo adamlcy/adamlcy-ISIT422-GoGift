@@ -54,10 +54,11 @@ router.post('/login', function (req, res, next) {
         let token = jwt.sign({ username: doc.username }, 'secret', { expiresIn: '3h' });
         let gogift = doc.gogift;
         let ob_id = doc._id;
-
+        let email = doc.email;
 
         return res.status(200).json( {
             token: token,
+            email: email,
             gogift: gogift,
             credId: ob_id
         });
