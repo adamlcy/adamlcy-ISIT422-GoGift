@@ -13,7 +13,6 @@ router.post('/register', function (req, res, next) {
     password: UserC.hashPassword(req.body.password),
     creation_dt: Date.now(),
     gogift: null
-
   });
 
   let promise = userC.save();
@@ -29,8 +28,9 @@ router.post('/register', function (req, res, next) {
 
 
 router.patch('/credentials/:_id', function (req, res){
+  console.log(req.body);
   let promise = UserC.findByIdAndUpdate(req.params._id, {
-    gogift: req.body
+    gogift: req.body.accountId
   },{new: true}).exec();
 
   promise.then(function (doc){
