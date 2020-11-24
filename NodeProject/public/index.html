@@ -34,6 +34,14 @@ Item Id: <input type="text" id="iid">
 <button id="add">Add</button>
 <pre id="addTxt"></pre>
 
+<h3>Add Item with Image</h3>
+Item Id: <input type="file" id="ii" name="ii">
+<button id="iimg">Upload</button>  
+<button id="getImg">Get Image</button>
+<div>
+  <img id="is" src="">
+</div>                     
+
 
 <button id="friend-button">Find my friend</button>
 <pre id="friend-data"></pre>
@@ -222,6 +230,46 @@ fetch('/profile/5fa6d2ba67af73dbb03392cf')
 
 
   ////////////////////////////////////
+    ///////////////////////////////
+  //Test Add Image
+    //const ii = document.getElementById('ii').file;
+    const ii = document.querySelector('input[type="file"]');
+    const imgBtn = document.getElementById('iimg');
+    const imgTxt = document.getElementById('imgTxt');
+
+    imgBtn.addEventListener('click', () => {
+      console.log('img btn clicked!!')
+      let formData = new FormData();
+      formData.append('image', ii.files[0]);
+      
+      fetch('/imgTest', {
+        method: 'POST',        
+        body: formData
+      })
+      .then((res) => res.json())
+      .then((res) =>
+      console.log(res)
+      )
+      .catch((e) => console.log(`update image failed: ${e}`));
+    });
+
+    const getImgBtn = document.getElementById('getImg');
+    getImgBtn.addEventListener('click', () => {
+      fetch('/getImage')
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+
+          let binary = '';
+          let bytes = [].slice.call(new Uint8Array(res.data.data));
+          bytes.forEach((b) => binary += String.fromCharCode(b));
+          let bufferData = window.btoa(binary);
+          console.log(bufferData);
+          
+          document.getElementById('is').src = `data:${res.contentType};base64,${bufferData}`;
+        })
+        .catch((e) => console.log(`get image failed: ${e}`));
+    });
 
 
   const friendBtn = document.getElementById('friend-button');
