@@ -12,7 +12,7 @@ router.post('/register', function (req, res, next) {
     username: req.body.username,
     password: UserC.hashPassword(req.body.password),
     creation_dt: Date.now(),
-    gogift: null
+    gogift: null  // field to check whether the user has an account or not
   });
 
   let promise = userC.save();
@@ -26,19 +26,23 @@ router.post('/register', function (req, res, next) {
   })
 })
 
-
+// PATCH /credentials/:_id
+// Update gogift in credentials.
+// Need credential id to update document. (passed in as a req.params)
+// Need user id to update gogift with new value (ObjectId in user collection) (passed in through req.body)
 router.patch('/credentials/:_id', function (req, res){
   console.log(req.body);
   let promise = UserC.findByIdAndUpdate(req.params._id, {
     gogift: req.body.accountId
   },{new: true}).exec();
+  // {new: true} --> mongodb will pass back the updated doc
 
   promise.then(function (doc){
     if(doc){
       console.log(doc)
     }
     return res.status(200).json({
-     gogift: doc.gogift
+     gogift: doc.gogift //only pass back the gogift field to check if it's updated
     })  
   })
 
@@ -56,6 +60,11 @@ router.post('/login', function (req, res, next) {
         let ob_id = doc._id;
         let email = doc.email;
 
+        // Angular needs the following data so we pass it back as a response:
+        // token: for verifying the token
+        // email: for storing the value in the user collection
+        // gogift: checking if user has already created an account or not [null: first-time user/have value: already created account]
+        // credId: for updating the doc in the credentials collection (gogift is updated with the ObjectId for the user collection; not null anymore)
         return res.status(200).json( {
             token: token,
             email: email,

@@ -8,6 +8,9 @@ var schema = new Schema({
     username: { type: String, require: true },
     password: { type: String, require: true },
     creation_dt: { type: Date, require: true },
+    // gogift created to link credentials with user collection
+    // can redirect logged in user to appropriate page
+    // require is false so we can set the initial value as null
     gogift: {type: mongoose.Schema.Types.ObjectId, ref:'UserWithImg', require: false},
 
 }, {"collection":"userCredentials"});
