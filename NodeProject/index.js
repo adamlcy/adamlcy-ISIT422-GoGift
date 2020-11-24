@@ -55,6 +55,20 @@ app.get('/profile/:id', async(req, res) => {
     }
 });
 
+
+app.get('/takeWishlist/:id', async(req, res) => {
+    //let user_id = '5f97245cd5ce43461a7a14fb';
+    const userInfo = await userModel.findById(req.params.id)
+                        .populate('wishlist')
+    try{
+        console.log(userInfo);
+        res.send(userInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+
 // POST /profile
 // Create account.
 // data needed: first name, last name, email, bio, profile img, tags (wishlist and friend is empty)
@@ -95,6 +109,8 @@ app.patch('/profile/:id', async(req, res) => {
         res.status(500).send(e);
     }
 });
+
+
 
 // GET /friends/:id
 // Display friends list on user's Find Friend Page
@@ -217,6 +233,19 @@ app.patch('/tag/:id', async(req, res) => {
     try{
         console.log(tagNewInfo);
         res.send(tagNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+app.patch('/deleteItemFromWislist/:id', async(req, res) => {
+    console.log(req.params.id);
+    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+   
+    const userInfo = await userModel.findByIdAndUpdate(req.params.id, {$pull: req.body}, {new: true})
+                        .populate('wishlist')
+    try{
+        console.log(userInfo);
+        res.send(userInfo);
     }catch(e){
         res.status(500).send(e);
     }
