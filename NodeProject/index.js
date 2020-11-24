@@ -2,7 +2,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 const cors = require('cors');
-
+var usersRouter = require('./routes/usercredentials');
 
 const port = 3000;
 require('dotenv').config();
@@ -11,6 +11,10 @@ const mongoose = require('mongoose');
 let userModel = require('./userModel');
 let tagModel = require('./tagModel');
 let itemModel = require('./itemModel');
+let imgUserModel = require('./userWithImgModel');
+
+//testing
+let imgModel = require('./imageModel');
 
 const corsOpt = {
     origin: 'http://localhost:4200',
@@ -18,6 +22,7 @@ const corsOpt = {
 }
 
 var app = express();
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -37,6 +42,72 @@ mongoose.connect(mongo_uri, {useNewUrlParser: true})
 .then(
     console.log("MongoDB is connected!")
 );
+
+
+const fs = require('fs'); 
+const multer = require('multer'); 
+
+global.__basedir = __dirname;
+const upload = multer({dest: __basedir + '/multer-uploads/'});
+
+// POST /profileWithImg
+// Create account with image.
+
+app.post('/profileWithImg', upload.single('profileImg'), async(req, res) => {
+    console.log('getting file');
+    console.log(req.file);
+    const imgUser = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        bio: req.body.bio,
+        profileImg: {
+            data: fs.readFileSync(path.join(__dirname + '/multer-uploads/' + req.file.filename)),
+            contentType: req.file.mimetype
+        },
+        tag: JSON.parse(req.body.tag),
+        wishlist: [],
+        friend: []
+    };
+    console.log(imgUser);
+    const imgUserDoc = new imgUserModel(imgUser);
+    try{
+        await imgUserDoc.save();
+        res.status(200).send(imgUserDoc);
+    }
+    catch(e){
+        res.status(500).send(e);
+    }
+
+    let imgFilePath = path.join(__dirname + '/multer-uploads/' + req.file.filename);
+    fs.unlink(imgFilePath, (err) => {
+        if(err){
+            console.log(`failed to delete file: ${e}`);
+        }else{
+            console.log(`file deleted: ${imgFilePath}`);
+        }
+    });
+});
+
+// GET /profileWithImg/:id
+// Get account with image.
+
+app.get('/profileWithImg/:id', async(req, res) => {
+    //let user_id = '5f97245cd5ce43461a7a14fb';
+    const userImgInfo = await imgUserModel.findById(req.params.id).populate('tag');
+                        
+    try{
+        console.log(userImgInfo);
+        res.contentType('json');
+        res.status(200).send(userImgInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+
+app.use('/usercredential', usersRouter);
+
 
 // GET /profile/:id
 // Display data on Profile Page.
@@ -383,6 +454,53 @@ app.get('/getItemsInfo/:user_id', async(req, res) => {
     }catch(e){
         res.status(500).send(e);
     }
+});
+
+
+////image test code
+app.post('/imgTest', upload.single('image'), async(req, res) => {
+    console.log(req.file);
+    const Image = {
+        image: {
+            data: fs.readFileSync(path.join(__dirname + '/multer-uploads/' + req.file.filename)),
+            contentType: 'image/jpeg'
+        },
+    };
+    
+    const imgInfo = new imgModel(Image);
+    console.log('sending to database');
+    console.log(imgInfo);
+    try{
+        await imgInfo.save();
+        res.status(200).send('image saved');
+    }
+    catch(e){
+        res.status(500).send(e);
+    }
+
+    
+    let imgFilePath = path.join(__dirname + '/multer-uploads/' + req.file.filename);
+    fs.unlink(imgFilePath, (err) => {
+        if(err){
+            console.log(`failed to delete file: ${e}`);
+        }else{
+            console.log(`file deleted: ${imgFilePath}`);
+        }
+    });
+});
+
+app.get('/getImage', async(req, res) => {
+    
+    const image = await imgModel.findById('5fbab3868dfb4058d2b62925');
+    
+    try{
+        console.log(image);
+        res.contentType('json');
+        res.send(image.image);
+    }catch(e){
+        res.status(500).send(e);
+    }
+    
 });
 
 
