@@ -1,14 +1,14 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
-const usermodel = require('../userModel')
+const UserWithImg = require('../userWithImgModel')
 
 var schema = new Schema({
     email: { type: String, require: true },
     username: { type: String, require: true },
     password: { type: String, require: true },
     creation_dt: { type: Date, require: true },
-    gogift: {type: mongoose.Schema.Types.ObjectId, ref:'User'},
+    gogift: {type: mongoose.Schema.Types.ObjectId, ref:'UserWithImg', require: false},
 
 }, {"collection":"userCredentials"});
 

@@ -3,13 +3,17 @@ var router = express.Router();
 var UserC = require('../models/usercredential');
 //var User = require('../userModel');
 var jwt = require('jsonwebtoken');
+const { Mongoose } = require('mongoose');
+const { route } = require('..');
 
 router.post('/register', function (req, res, next) {
   var userC = new UserC ({
     email: req.body.email,
     username: req.body.username,
     password: UserC.hashPassword(req.body.password),
-    creation_dt: Date.now()
+    creation_dt: Date.now(),
+    gogift: null
+
   });
 
   let promise = userC.save();
@@ -23,6 +27,23 @@ router.post('/register', function (req, res, next) {
   })
 })
 
+
+router.patch('/credentials/:_id', function (req, res){
+  let promise = UserC.findByIdAndUpdate(req.params._id, {
+    gogift: req.body
+  },{new: true}).exec();
+
+  promise.then(function (doc){
+    if(doc){
+      console.log(doc)
+    }
+    return res.status(200).json({
+     gogift: doc.gogift
+    })  
+  })
+
+})
+
 router.post('/login', function (req, res, next) {
   let promise = UserC.findOne({ email: req.body.email }).exec();
 
@@ -31,8 +52,15 @@ router.post('/login', function (req, res, next) {
       if (doc.isValid(req.body.password)) {
         // generate token
         let token = jwt.sign({ username: doc.username }, 'secret', { expiresIn: '3h' });
+        let gogift = doc.gogift;
+        let ob_id = doc._id;
 
-        return res.status(200).json(token);
+
+        return res.status(200).json( {
+            token: token,
+            gogift: gogift,
+            credId: ob_id
+        });
 
       } else {
         return res.status(501).json({ message: ' Invalid Credentials' });
