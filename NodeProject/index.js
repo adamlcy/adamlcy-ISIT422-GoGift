@@ -94,7 +94,7 @@ app.post('/profileWithImg', upload.single('profileImg'), async(req, res) => {
 
 app.get('/profileWithImg/:id', async(req, res) => {
     //let user_id = '5f97245cd5ce43461a7a14fb';
-    const userImgInfo = await imgUserModel.findById(req.params.id);
+    const userImgInfo = await imgUserModel.findById(req.params.id).populate('tag');
                         
     try{
         console.log(userImgInfo);
