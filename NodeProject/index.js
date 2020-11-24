@@ -2,7 +2,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 const cors = require('cors');
-
+var usersRouter = require('./routes/usercredentials');
 
 const port = 3000;
 require('dotenv').config();
@@ -18,6 +18,7 @@ const corsOpt = {
 }
 
 var app = express();
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -37,6 +38,9 @@ mongoose.connect(mongo_uri, {useNewUrlParser: true})
 .then(
     console.log("MongoDB is connected!")
 );
+
+
+app.use('/usercredential', usersRouter);
 
 // GET /profile/:id
 // Display data on Profile Page.
