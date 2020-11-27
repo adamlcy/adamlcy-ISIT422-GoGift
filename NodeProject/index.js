@@ -105,6 +105,23 @@ app.get('/profileWithImg/:id', async(req, res) => {
     }
 });
 
+// PATCH /profileWithImg/:id
+// Update profile with image.
+
+
+app.patch('/profileWithImg/:id', async(req, res) => {
+    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true}).populate('tag');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
 
 app.use('/usercredential', usersRouter);
 
