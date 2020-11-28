@@ -105,14 +105,12 @@ app.get('/profileWithImg/:id', async(req, res) => {
     }
 });
 
-// PATCH /profileWithImg/:id
-// Update profile with image.
+// PATCH /profileWithImg/info/:id
+// Update first name, last name, and email field.
 
-
-app.patch('/profileWithImg/:id', async(req, res) => {
-    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+app.patch('/profileWithImg/info/:id', async(req, res) => {
     const userNewInfo = await imgUserModel
-                    .findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true}).populate('tag');
+                    .findByIdAndUpdate(req.params.id, {firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email}, {new: true}).populate('tag');
     try{
         //await userNewInfo.save();
         console.log(userNewInfo);
@@ -121,6 +119,54 @@ app.patch('/profileWithImg/:id', async(req, res) => {
         res.status(500).send(e);
     }
 });
+
+// PATCH /profileWithImg/bio/:id
+// Update bio field.
+
+app.patch('/profileWithImg/bio/:id', async(req, res) => {
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {bio: req.body.bio}, {new: true}).populate('tag');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+
+// PATCH /profileWithImg/image/:id
+// Update profile picture.
+
+
+app.patch('/profileWithImg/image/:id', upload.single('profileImg'), async(req, res) => {
+    const imgUser = {
+        profileImg: {
+            data: fs.readFileSync(path.join(__dirname + '/multer-uploads/' + req.file.filename)),
+            contentType: req.file.mimetype
+        }
+    };
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {profileImg: imgUser.profileImg}, {new: true}).populate('tag');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+
+    let imgFilePath = path.join(__dirname + '/multer-uploads/' + req.file.filename);
+    fs.unlink(imgFilePath, (err) => {
+        if(err){
+            console.log(`[Update Profile Picture] failed to delete file: ${e}`);
+        }else{
+            console.log(`[Update Profile Picture] file deleted: ${imgFilePath}`);
+        }
+    });
+});
+
 
 // PATCH /profileWithImg/item/:id
 // Update the item field of the profile.
