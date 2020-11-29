@@ -3,9 +3,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 const cors = require('cors');
 var usersRouter = require('./routes/usercredentials');
-
+const dotenv = require('dotenv')
 const port = 3000;
-require('dotenv').config();
+
+const session = require ('express-session')
+const passport = require ('passport')
+
+//load config
+dotenv.config ({path: './config/config.env'})
+
+
+
 const mongoose = require('mongoose');
 
 let userModel = require('./userModel');
@@ -30,9 +38,28 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors(corsOpt));
 
+
+// Logging Morgan - Thais
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'))
+}
+
+
+// Passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
+
+
+// Routes
+app.use('/', require('./routes/index'))
+app.use('/auth', require('./routes/auth'))
+
 app.get('/', function(req, res, next) {
     res.render('index', { title: 'Express' });
 });
+
+//passport config 
+require('./config/passport')(passport)
 
 const mg_user = process.env.MG_USER;
 const mg_pwd = process.env.MG_PWD;

@@ -5,6 +5,8 @@ var UserC = require('../models/usercredential');
 var jwt = require('jsonwebtoken');
 const { Mongoose } = require('mongoose');
 const { route } = require('..');
+const User = require('../userModel');
+var UserCG = require('../models/usergooglecredentials');
 
 router.post('/register', function (req, res, next) {
   var userC = new UserC ({
@@ -104,5 +106,31 @@ function verifyToken(req, res, next) {
     }
   })
 }
+
+// google
+
+router.post('/postSocialLogin', (req, res, next) => {
+  UserCG.findOne({username: req.body.username}, (err, user)=>{
+    if(err){
+      next(err);
+    }
+    if (!user){
+      var newUser = new UserCG(req.body);
+      newUser.save((err, save) => {
+        if(err){
+          next(err);
+        }
+        else{
+          res.json({sucess: true, status: 'User Added Successfully'});
+        }
+      })
+    }
+    else{
+      res.json ({sucess: true, status: 'User Added Successfully'});
+    }
+  })
+})
+
+
 
 module.exports = router;
