@@ -3,7 +3,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 const cors = require('cors');
 var usersRouter = require('./routes/usercredentials');
-
+var nodemailer = require('nodemailer');
 const port = 3000;
 require('dotenv').config();
 const mongoose = require('mongoose');
@@ -37,6 +37,8 @@ app.get('/', function(req, res, next) {
 const mg_user = process.env.MG_USER;
 const mg_pwd = process.env.MG_PWD;
 const mg_db = process.env.MG_DB;
+const email_user = process.env.EMAIL_USER;
+const email_pwd = process.env.EMAIL_PWD;
 const mongo_uri = `mongodb+srv://${mg_user}:${mg_pwd}@cluster0.iod5u.mongodb.net/${mg_db}?retryWrites=true&w=majority`;
 mongoose.connect(mongo_uri, {useNewUrlParser: true})
 .then(
@@ -50,6 +52,15 @@ const multer = require('multer');
 global.__basedir = __dirname;
 const upload = multer({dest: __basedir + '/multer-uploads/'});
 
+const transporter = nodemailer.createTransport({
+    port: 587,               // true for 465, false for other ports
+    host: "smtp.gmail.com",
+       auth: {
+            user: email_user,
+            pass: email_pwd,
+         },
+    secure: false,
+    });
 // POST /profileWithImg
 // Create account with image.
 
@@ -502,7 +513,27 @@ app.get('/getImage', async(req, res) => {
     }
     
 });
-
+app.post("/friend/email", (req, res) => {
+    const {to} = req.body;
+    const mailData = {
+        from: email_user,
+        to: to,
+        subject: 'Hey ! Come Join me with this cool app!',
+        html: 'Hey! I found this cool app. Come Join me!'
+    };
+    transporter.sendMail(mailData, function (err, info) {
+        let msg = {msg: 'Email Sent.'};
+        if(err){
+          msg = {msg: 'Email Sent Failed.'};
+          console.log(err);
+          res.status(200).send(msg);
+        }
+        else{
+          console.log(info);
+          res.status(200).send(msg);
+        }
+     });
+  });
 
 app.listen(process.env.PORT || port, () => {
     console.log(`Express.js running on http://localhost:${port}`);
