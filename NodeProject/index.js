@@ -177,7 +177,7 @@ app.patch('/profileWithImg/image/:id', upload.single('profileImg'), async(req, r
 app.patch('/profileWithImg/item/:id', async(req, res) => {
     console.log(req.params.id);
     const userNewInfo = await imgUserModel
-                    .findByIdAndUpdate(req.params.id, {$push: {wishlist: req.body}}, {new: true}).populate('wishlist');
+                    .findByIdAndUpdate(req.params.id, {$addToSet: {wishlist: req.body}}, {new: true}).populate('wishlist');
     try{
         //await userNewInfo.save();
         console.log(userNewInfo);
