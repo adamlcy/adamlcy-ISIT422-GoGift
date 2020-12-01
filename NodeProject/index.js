@@ -3,9 +3,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 const cors = require('cors');
 var usersRouter = require('./routes/usercredentials');
-
+const dotenv = require('dotenv')
 const port = 3000;
-require('dotenv').config();
+
+const session = require ('express-session')
+const passport = require ('passport')
+
+//load config
+dotenv.config ({path: './config/config.env'})
+
+
+
 const mongoose = require('mongoose');
 
 let userModel = require('./userModel');
@@ -30,9 +38,28 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors(corsOpt));
 
+
+// Logging Morgan - Thais
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'))
+}
+
+
+// Passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
+
+
+// Routes
+app.use('/', require('./routes/index'))
+app.use('/auth', require('./routes/auth'))
+
 app.get('/', function(req, res, next) {
     res.render('index', { title: 'Express' });
 });
+
+//passport config 
+require('./config/passport')(passport)
 
 const mg_user = process.env.MG_USER;
 const mg_pwd = process.env.MG_PWD;
@@ -104,6 +131,121 @@ app.get('/profileWithImg/:id', async(req, res) => {
         res.status(500).send(e);
     }
 });
+
+// PATCH /profileWithImg/info/:id
+// Update first name, last name, and email field.
+
+app.patch('/profileWithImg/info/:id', async(req, res) => {
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email}, {new: true}).populate('tag');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// PATCH /profileWithImg/bio/:id
+// Update bio field.
+
+app.patch('/profileWithImg/bio/:id', async(req, res) => {
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {bio: req.body.bio}, {new: true}).populate('tag');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+
+// PATCH /profileWithImg/image/:id
+// Update profile picture.
+
+
+app.patch('/profileWithImg/image/:id', upload.single('profileImg'), async(req, res) => {
+    const imgUser = {
+        profileImg: {
+            data: fs.readFileSync(path.join(__dirname + '/multer-uploads/' + req.file.filename)),
+            contentType: req.file.mimetype
+        }
+    };
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {profileImg: imgUser.profileImg}, {new: true}).populate('tag');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+
+    let imgFilePath = path.join(__dirname + '/multer-uploads/' + req.file.filename);
+    fs.unlink(imgFilePath, (err) => {
+        if(err){
+            console.log(`[Update Profile Picture] failed to delete file: ${e}`);
+        }else{
+            console.log(`[Update Profile Picture] file deleted: ${imgFilePath}`);
+        }
+    });
+});
+
+
+// PATCH /profileWithImg/item/:id
+// Update the item field of the profile.
+// data needed for update: user's id.
+// data to update: item
+// will pass back updated record
+
+app.patch('/profileWithImg/item/:id', async(req, res) => {
+    console.log(req.params.id);
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {$addToSet: {wishlist: req.body}}, {new: true}).populate('wishlist');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// GET /profileWithImg/wishlist/:id
+// Get wishlist for user with profile image.
+app.get('/profileWithImg/wishlist/:id', async(req, res) => {
+    const userInfo = await imgUserModel.findById(req.params.id)
+                        .populate('wishlist')
+    try{
+        console.log(userInfo);
+        res.send(userInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+
+// PATCH /profileWithImg/tag/:id
+// Update the tag field of the profile.
+// data needed for update: user's id.
+// data to update: tag
+// will pass back updated record
+
+app.patch('/profileWithImg/tag/:id', async(req, res) => {
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {tag: req.body}, {new: true}).populate('tag');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
 
 
 app.use('/usercredential', usersRouter);
