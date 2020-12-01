@@ -4,10 +4,10 @@ const Schema = mongoose.Schema;
 const UserWithImg = require('../userWithImgModel')
 
 const schemaGoogle = new Schema({
-/*     googleId:{
+    googleId:{
         type: String,
         required:true
-    }, */ 
+    }, 
 
     email:{
         type: String,
