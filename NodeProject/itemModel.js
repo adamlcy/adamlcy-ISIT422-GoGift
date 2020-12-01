@@ -27,6 +27,7 @@ const item = new mongoose.Schema({
   tag: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}]
 
 }, {"collection":"item"});
+//item.index( { "url": 1 }, { unique: true } );
 
 const Item = mongoose.model("Item", item);
 module.exports = Item;

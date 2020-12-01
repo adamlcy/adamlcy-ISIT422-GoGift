@@ -11,6 +11,7 @@ const tag = new mongoose.Schema({
 
 
 }, {"collection":"tag"});
+tag.index( { "name": 1 }, { unique: true } );
 
 const Tag = mongoose.model("Tag", tag);
 module.exports = Tag;
