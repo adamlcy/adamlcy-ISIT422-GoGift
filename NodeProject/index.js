@@ -237,19 +237,47 @@ app.patch('/tag/:id', async(req, res) => {
         res.status(500).send(e);
     }
 });
-app.patch('/deleteItemFromWislist/:id', async(req, res) => {
-    console.log(req.params.id);
-    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+// app.patch('/deleteItemFromWislist/:id', async(req, res) => {
+//     console.log(req.params.id);
+//     console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
    
-    const userInfo = await userModel.findByIdAndUpdate(req.params.id, {$pull: req.body}, {new: true})
-                        .populate('wishlist')
-    try{
-        console.log(userInfo);
-        res.send(userInfo);
-    }catch(e){
-        res.status(500).send(e);
-    }
-});
+//     const userNewInfo = await userModel.findByIdAndUpdate(req.params.id, {$pull: {wishList: req.body}}, {new: true})
+//                         .populate('wishlist')
+//     try{
+//         console.log(userNewInfo);
+//         res.send(userNewInfo);
+//     }catch(e){
+//         res.status(500).send(e);
+//     }
+// });
+
+// module.exports.setupAccount = function(id,field,callback){
+//     var query = { _id: id };
+//     User.findOneAndUpdate(query, { $pull: { "wishlist": { field: { $exists: true } } } }, callback);
+// }
+
+// ReferralHistoryModel.update(
+//     { "referrals": referredId },
+//     { "$pull": { "referrals": referredId } },
+//     { "multi": true },
+//     function(err,status) {
+  
+//     }
+//   )
+  app.patch('/deleteItemFromWislist/:id', async(req, res) => {
+         console.log(req.params.id);
+         console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
+       
+         const userNewInfo = await ReferralHistoryModel.findByIdAndUpdate(req.params.id, {$pull: {wishList: req.body}}, {new: true})
+                             .populate('wishlist')
+         try{
+         console.log(userNewInfo);
+             res.send(userNewInfo);
+         }catch(e){
+             res.status(500).send(e);
+         }
+         console.log("hello");
+     });
 
 // PATCH /profile/item/:id
 // Update the item field of the profile.
