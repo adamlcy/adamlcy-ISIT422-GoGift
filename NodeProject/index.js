@@ -227,6 +227,25 @@ app.patch('/profileWithImg/item/:id', async(req, res) => {
     }
 });
 
+// PATCH /profileWithImg/friend/:id
+// Update the item field of the profile.
+// data needed for update: user's id.
+// data to update: item
+// will pass back updated record
+
+app.patch('/profileWithImg/friend/:id', async(req, res) => {
+    
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {$addToSet: {friend: req.body}}, {new: true}).populate('friend');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
 // GET /profileWithImg/wishlist/:id
 // Get wishlist for user with profile image.
 app.get('/profileWithImg/wishlist/:id', async(req, res) => {
