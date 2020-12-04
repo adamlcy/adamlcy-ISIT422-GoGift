@@ -31,7 +31,7 @@ const userWithImg = new mongoose.Schema({
 
   wishlist: [{type: mongoose.Schema.Types.ObjectId, ref: 'Item'}],
 
-  friend: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
+  friend: [{type: mongoose.Schema.Types.ObjectId, ref: 'UserWithImg'}]
 
 }, {"collection":"userWithImg"});
 

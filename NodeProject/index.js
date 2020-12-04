@@ -241,6 +241,36 @@ app.get('/profileWithImg/wishlist/:id', async(req, res) => {
 });
 
 
+// GET /profileWithImg/friendlist/:id
+// Get list of friends for user with profile image.
+app.get('/profileWithImg/friendlist/:id', async(req, res) => {
+    const userInfo = await imgUserModel.findById(req.params.id)
+                        .populate('friend');
+    try{
+        console.log(userInfo.friend);
+        res.send(userInfo.friend);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// GET /friendWithImg/:email
+// Find friend based on email address
+// data: first name, last name, email, profile img
+// example output: {"firstName":"White","lastName":"Seahorse","email":"white.horse@hotmail.com","bio":"Another one","profileImg":"file/path"}
+
+app.get('/friendWithImg/:email', async(req, res) => {
+    const userInfo = await imgUserModel.findOne({email: req.params.email});
+    try{
+        console.log(userInfo);
+        res.send(userInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+}); 
+
+
+
 // PATCH /profileWithImg/tag/:id
 // Update the tag field of the profile.
 // data needed for update: user's id.
@@ -658,12 +688,12 @@ app.get('/getImage', async(req, res) => {
     
 });
 app.post("/friend/email", (req, res) => {
-    const {to} = req.body;
+    const {to, sender} = req.body;
     const mailData = {
         from: email_user,
         to: to,
-        subject: 'Hey ! Come Join me with this cool app!',
-        html: 'Hey! I found this cool app. Come Join me!'
+        subject: `${sender} has invited you to join GoGift`,
+        html: 'Hey, I found this cool app! Come join me by signing up here: http://gogiftangular.azurewebsites.net/'
     };
     transporter.sendMail(mailData, function (err, info) {
         let msg = {msg: 'Email Sent.'};
