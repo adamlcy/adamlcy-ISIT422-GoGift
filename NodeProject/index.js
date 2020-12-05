@@ -463,7 +463,7 @@ app.patch('/tag/:id', async(req, res) => {
         res.status(500).send(e);
     }
 });
-app.patch('/deleteItemFromWislist/:id', async(req, res) => {
+app.delete('/deleteItemFromWislist/:id', async(req, res) => {
     console.log(req.params.id);
     console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
    
