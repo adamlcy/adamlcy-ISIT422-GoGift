@@ -239,8 +239,8 @@ app.patch('/profileWithImg/friend/:id', async(req, res) => {
                     .findByIdAndUpdate(req.params.id, {$addToSet: {friend: req.body}}, {new: true}).populate('friend');
     try{
         //await userNewInfo.save();
-        console.log(userNewInfo);
-        res.send(userNewInfo);
+        console.log(userNewInfo.friend);
+        res.send(userNewInfo.friend);
     }catch(e){
         res.status(500).send(e);
     }
