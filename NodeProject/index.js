@@ -276,7 +276,7 @@ app.patch('/tag/:id', async(req, res) => {
          }catch(e){
              res.status(500).send(e);
          }
-         console.log("hello");
+        // console.log("hello");
      });
 
 // PATCH /profile/item/:id
