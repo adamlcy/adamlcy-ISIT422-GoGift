@@ -463,11 +463,11 @@ app.patch('/tag/:id', async(req, res) => {
         res.status(500).send(e);
     }
 });
-app.delete('/deleteItemFromWislist/:id', async(req, res) => {
+app.delete('/deleteItemFromWislist/:id/:itemId', async(req, res) => {
     console.log(req.params.id);
-    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
    
-    const userInfo = await userModel.findByIdAndUpdate(req.params.id, {$pull: req.body}, {new: true})
+   
+    const userInfo = await imgUserModel.findByIdAndUpdate(req.params.id, {$pull: {wishlist: req.params.itemId}}, {new: true})
                         .populate('wishlist')
     try{
         console.log(userInfo);
