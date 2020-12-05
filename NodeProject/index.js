@@ -260,8 +260,8 @@ app.delete('/profileWithImg/friend/:id/:friendId', async(req, res) => {
                     .findByIdAndUpdate(req.params.id, {$pull: {friend: removeFriendId}}, {new: true}).populate('friend');
     try{
         //await userNewInfo.save();
-        console.log(userNewInfo);
-        res.send(userNewInfo);
+        console.log(userNewInfo.friend);
+        res.send(userNewInfo.friend);
     }catch(e){
         res.status(500).send(e);
     }
