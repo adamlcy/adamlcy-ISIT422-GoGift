@@ -246,6 +246,27 @@ app.patch('/profileWithImg/friend/:id', async(req, res) => {
     }
 });
 
+// DELETE /profileWithImg/removeFriend/:id
+// Update the item field of the profile.
+// data needed for update: user's id.
+// data to update: item
+// will pass back updated record
+
+app.delete('/profileWithImg/friend/:id/:friendId', async(req, res) => {
+    let removeFriendId = req.params.friendId;
+    console.log(req.params.friendId);
+    
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {$pull: {friend: removeFriendId}}, {new: true}).populate('friend');
+    try{
+        //await userNewInfo.save();
+        console.log(userNewInfo);
+        res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
 // GET /profileWithImg/wishlist/:id
 // Get wishlist for user with profile image.
 app.get('/profileWithImg/wishlist/:id', async(req, res) => {
