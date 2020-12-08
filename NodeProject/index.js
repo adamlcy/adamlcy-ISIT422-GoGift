@@ -27,7 +27,7 @@ let imgUserModel = require('./userWithImgModel');
 let imgModel = require('./imageModel');
 
 const corsOpt = {
-    origin: 'https://localhost:4200/',
+    origin: 'http://localhost:4200',
     optionsSuccessStatus: 200 
 }
 var app = express();
@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(cors(corsOpt));
+app.use(cors(corsOpt));
 
 
 // Logging Morgan - Thais
