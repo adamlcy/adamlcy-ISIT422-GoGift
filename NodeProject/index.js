@@ -94,8 +94,6 @@ const transporter = nodemailer.createTransport({
 // Create account with image.
 
 app.post('/profileWithImg', upload.single('profileImg'), async(req, res) => {
-    console.log('getting file');
-    console.log(req.file);
     const imgUser = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -109,7 +107,6 @@ app.post('/profileWithImg', upload.single('profileImg'), async(req, res) => {
         wishlist: [],
         friend: []
     };
-    console.log(imgUser);
     const imgUserDoc = new imgUserModel(imgUser);
     try{
         await imgUserDoc.save();
@@ -137,7 +134,6 @@ app.get('/profileWithImg/:id', async(req, res) => {
     const userImgInfo = await imgUserModel.findById(req.params.id).populate('tag');
                         
     try{
-        console.log(userImgInfo);
         res.contentType('json');
         res.status(200).send(userImgInfo);
     }catch(e){
@@ -153,7 +149,6 @@ app.patch('/profileWithImg/info/:id', async(req, res) => {
                     .findByIdAndUpdate(req.params.id, {firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email}, {new: true}).populate('tag');
     try{
         //await userNewInfo.save();
-        console.log(userNewInfo);
         res.send(userNewInfo);
     }catch(e){
         res.status(500).send(e);
@@ -168,7 +163,6 @@ app.patch('/profileWithImg/bio/:id', async(req, res) => {
                     .findByIdAndUpdate(req.params.id, {bio: req.body.bio}, {new: true}).populate('tag');
     try{
         //await userNewInfo.save();
-        console.log(userNewInfo);
         res.send(userNewInfo);
     }catch(e){
         res.status(500).send(e);
@@ -191,7 +185,6 @@ app.patch('/profileWithImg/image/:id', upload.single('profileImg'), async(req, r
                     .findByIdAndUpdate(req.params.id, {profileImg: imgUser.profileImg}, {new: true}).populate('tag');
     try{
         //await userNewInfo.save();
-        console.log(userNewInfo);
         res.send(userNewInfo);
     }catch(e){
         res.status(500).send(e);
@@ -215,13 +208,48 @@ app.patch('/profileWithImg/image/:id', upload.single('profileImg'), async(req, r
 // will pass back updated record
 
 app.patch('/profileWithImg/item/:id', async(req, res) => {
-    console.log(req.params.id);
     const userNewInfo = await imgUserModel
                     .findByIdAndUpdate(req.params.id, {$addToSet: {wishlist: req.body}}, {new: true}).populate('wishlist');
     try{
         //await userNewInfo.save();
-        console.log(userNewInfo);
         res.send(userNewInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// PATCH /profileWithImg/friend/:id
+// Update the friend field of the profile.
+// data needed for update: user's id.
+// data to update: friend
+// will pass back updated record
+
+app.patch('/profileWithImg/friend/:id', async(req, res) => {
+    
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {$addToSet: {friend: req.body}}, {new: true}).populate('friend');
+    try{
+        //await userNewInfo.save();
+        res.send(userNewInfo.friend);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// DELETE /profileWithImg/friend/:id/:friendId
+// Update the friend field of the profile.
+// data needed for update: user's id.
+// data to update: friend
+// will pass back updated record
+
+app.delete('/profileWithImg/friend/:id/:friendId', async(req, res) => {
+    let removeFriendId = req.params.friendId;
+    
+    const userNewInfo = await imgUserModel
+                    .findByIdAndUpdate(req.params.id, {$pull: {friend: removeFriendId}}, {new: true}).populate('friend');
+    try{
+        //await userNewInfo.save();
+        res.send(userNewInfo.friend);
     }catch(e){
         res.status(500).send(e);
     }
@@ -233,12 +261,39 @@ app.get('/profileWithImg/wishlist/:id', async(req, res) => {
     const userInfo = await imgUserModel.findById(req.params.id)
                         .populate('wishlist')
     try{
-        console.log(userInfo);
         res.send(userInfo);
     }catch(e){
         res.status(500).send(e);
     }
 });
+
+
+// GET /profileWithImg/friendlist/:id
+// Get list of friends for user with profile image.
+app.get('/profileWithImg/friendlist/:id', async(req, res) => {
+    const userInfo = await imgUserModel.findById(req.params.id)
+                        .populate('friend');
+    try{
+        res.send(userInfo.friend);
+    }catch(e){
+        res.status(500).send(e);
+    }
+});
+
+// GET /friendWithImg/:email
+// Find friend based on email address
+// data: first name, last name, email, profile img
+// example output: {"firstName":"White","lastName":"Seahorse","email":"white.horse@hotmail.com","bio":"Another one","profileImg":"file/path"}
+
+app.get('/friendWithImg/:email', async(req, res) => {
+    const userInfo = await imgUserModel.findOne({email: req.params.email});
+    try{
+        res.send(userInfo);
+    }catch(e){
+        res.status(500).send(e);
+    }
+}); 
+
 
 
 // PATCH /profileWithImg/tag/:id
@@ -252,7 +307,6 @@ app.patch('/profileWithImg/tag/:id', async(req, res) => {
                     .findByIdAndUpdate(req.params.id, {tag: req.body}, {new: true}).populate('tag');
     try{
         //await userNewInfo.save();
-        console.log(userNewInfo);
         res.send(userNewInfo);
     }catch(e){
         res.status(500).send(e);
@@ -388,7 +442,6 @@ app.get('/allTags', async(req, res) => {
     try{
         let tags = tagInfo.map(t => t.name);
         let tagIds = tagInfo.map(t => t._id);
-        console.log({tags: tags, tagIds: tagIds});
         res.send({tags: tags, tagIds: tagIds});
     }catch(e){
         res.status(500).send(e);
@@ -422,7 +475,6 @@ app.get('/itemsByTag/:tagName', async(req, res) => {
                             .populate('item', '-tag')
                             .select('-_id');                            
     try{
-        console.log(tagItemInfo.item);
         res.send(tagItemInfo.item);
     }catch(e){
         res.status(500).send(e);
@@ -452,25 +504,19 @@ app.post('/item', async(req, res) => {
 // will pass back updated record
 
 app.patch('/tag/:id', async(req, res) => {
-    console.log(req.params.id);
-    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
     const tagNewInfo = await tagModel
                     .findByIdAndUpdate(req.params.id, {$push: {item: req.body}}, {new: true}).populate('item');
     try{
-        console.log(tagNewInfo);
         res.send(tagNewInfo);
     }catch(e){
         res.status(500).send(e);
     }
 });
 app.patch('/deleteItemFromWislist/:id', async(req, res) => {
-    console.log(req.params.id);
-    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
-   
+    
     const userInfo = await userModel.findByIdAndUpdate(req.params.id, {$pull: req.body}, {new: true})
                         .populate('wishlist')
     try{
-        console.log(userInfo);
         res.send(userInfo);
     }catch(e){
         res.status(500).send(e);
@@ -484,8 +530,6 @@ app.patch('/deleteItemFromWislist/:id', async(req, res) => {
 // will pass back updated record
 
 app.patch('/profile/item/:id', async(req, res) => {
-    console.log(req.params.id);
-    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
     const userNewInfo = await userModel
                     .findByIdAndUpdate(req.params.id, {$push: {wishlist: req.body}}, {new: true}).populate('wishlist');
     try{
@@ -504,13 +548,10 @@ app.patch('/profile/item/:id', async(req, res) => {
 // will pass back updated record
 
 app.patch('/profile/tag/:id', async(req, res) => {
-    console.log(req.params.id);
-    console.log(`I AM GETTING THIS: ${JSON.stringify(req.body)}`);
     const userNewInfo = await userModel
                     .findByIdAndUpdate(req.params.id, {tag: req.body}, {new: true}).populate('wishlist');
     try{
         //await userNewInfo.save();
-        console.log(userNewInfo);
         res.send(userNewInfo);
     }catch(e){
         res.status(500).send(e);
@@ -658,12 +699,12 @@ app.get('/getImage', async(req, res) => {
     
 });
 app.post("/friend/email", (req, res) => {
-    const {to} = req.body;
+    const {to, sender} = req.body;
     const mailData = {
         from: email_user,
         to: to,
-        subject: 'Hey ! Come Join me with this cool app!',
-        html: 'Hey! I found this cool app. Come Join me!'
+        subject: `${sender} has invited you to join GoGift`,
+        html: 'Hey, I found this cool app! Come join me by signing up here: http://gogiftangular.azurewebsites.net/'
     };
     transporter.sendMail(mailData, function (err, info) {
         let msg = {msg: 'Email Sent.'};
