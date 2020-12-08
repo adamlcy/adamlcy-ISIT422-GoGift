@@ -12,7 +12,7 @@ const session = require ('express-session')
 const passport = require ('passport')
 
 //load config
-dotenv.config ({path: './config/config.env'})
+dotenv.config ({path: '.env'})
 
 
 
@@ -26,11 +26,11 @@ let imgUserModel = require('./userWithImgModel');
 //testing
 let imgModel = require('./imageModel');
 
-const corsOpt = {
-    origin: 'http://localhost:4200',
+/* const corsOpt = {
+    origin: 'https://gogiftangular.azurewebsites.net/',
     optionsSuccessStatus: 200 
 }
-
+ */
 var app = express();
 
 
@@ -38,7 +38,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors(corsOpt));
+// app.use(cors(corsOpt));
 
 
 // Logging Morgan - Thais
@@ -53,15 +53,13 @@ app.use(passport.session())
 
 
 // Routes
-app.use('/', require('./routes/index'))
-app.use('/auth', require('./routes/auth'))
+
 
 app.get('/', function(req, res, next) {
     res.render('index', { title: 'Express' });
 });
 
-//passport config 
-require('./config/passport')(passport)
+
 
 const mg_user = process.env.MG_USER;
 const mg_pwd = process.env.MG_PWD;
