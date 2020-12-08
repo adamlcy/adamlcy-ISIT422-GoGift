@@ -26,11 +26,10 @@ let imgUserModel = require('./userWithImgModel');
 //testing
 let imgModel = require('./imageModel');
 
-/* const corsOpt = {
-    origin: 'https://gogiftangular.azurewebsites.net/',
+const corsOpt = {
+    origin: 'https://localhost:4200/',
     optionsSuccessStatus: 200 
 }
- */
 var app = express();
 
 
