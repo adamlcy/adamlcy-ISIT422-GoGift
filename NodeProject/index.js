@@ -512,9 +512,13 @@ app.patch('/tag/:id', async(req, res) => {
         res.status(500).send(e);
     }
 });
-app.patch('/deleteItemFromWislist/:id', async(req, res) => {
-    
-    const userInfo = await userModel.findByIdAndUpdate(req.params.id, {$pull: req.body}, {new: true})
+
+app.delete('/deleteItemFromWislist/:id/:itemId', async(req, res) => {
+    console.log(req.params.id);
+   
+   
+    const userInfo = await imgUserModel.findByIdAndUpdate(req.params.id, {$pull: {wishlist: req.params.itemId}}, {new: true})
+
                         .populate('wishlist')
     try{
         res.send(userInfo);
